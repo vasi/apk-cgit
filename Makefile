@@ -1,22 +1,28 @@
+
 .PHONY: all image run run-sqfs
 
 all: run
 
 image:
-	ch-image build . --force=fakeroot -t apk-cgit	
+	ch-image build . --force=fakeroot -t apk-cgit
 
-run: image
-	mkdir -p git/repositories
+REPO = git/repositories/apk-cgit.git
+
+$(REPO):
+	mkdir -p $@
+	git clone --bare . $@
+	echo 'cgit for apk distros' > $@/description
+
+run: image $(REPO)
 	ch-run apk-cgit --write-fake -b git:/var/lib/git -
 
 apk-cgit.sqfs: image
-	ch-convert apk-cgit apk-cgit.sqfs
+	ch-convert apk-cgit $@
 
-run-sqfs: apk-cgit.sqfs
-	mkdir -p git/repositories
-	ch-run apk-cgit.sqfs --write-fake -b git:/var/lib/git -- \
-	  /usr/sbin/lighttpd -D -f /etc/lighttpd/lighttpd.conf
+run-sqfs: apk-cgit.sqfs $(REPO)
+	ch-run $< --write-fake -b git:/var/lib/git -- \
+		/usr/sbin/lighttpd -D -f /etc/lighttpd/lighttpd.conf
 
 clean:
-	rm -f apk-cgit.sqfs
+	rm -rf apk-cgit.sqfs $(REPO)
 	ch-image delete apk-cgit
