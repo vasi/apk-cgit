@@ -20,6 +20,7 @@ apk-cgit.sqfs: image
 	ch-convert apk-cgit $@
 
 run-sqfs: apk-cgit.sqfs $(REPO)
+	# Need to include full CMD: https://gitlab.com/charliecloud/charliecloud/-/work_items/2097
 	ch-run $< --write-fake -b git:/var/lib/git -- \
 		/usr/sbin/lighttpd -D -f /etc/lighttpd/lighttpd.conf
 
