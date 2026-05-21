@@ -107,7 +107,6 @@ readme=:install
 enable-git-config=1
 enable-gitweb-owner=1
 remove-suffix=1
-project-list=/var/lib/git/projects.list
 scan-path=/var/lib/git/repositories
 
 #repo.url=testing
